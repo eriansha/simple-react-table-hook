@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 
 import RejectedProductSimpleTable from './RejectedProductSimpleTable'
-import RejectedProductTable from './RejectedProductTable'
+import RejectedProductCustomTable from './RejectedProductCustomTable'
 
 import RejectedProductApi from '../../services/rejected-service'
 
@@ -22,9 +22,8 @@ function RejectedProductContainer(props) {
 
   return(
     <>
-      <RejectedProductSimpleTable columns={columns} data={rejectedProducts} />
-      <div style={{ marginBottom: '100px' }}></div>
-      <RejectedProductTable
+      <RejectedProductSimpleTable />
+      <RejectedProductCustomTable
         data={rejectedProducts} 
         pagination={pagination}
         onFetchData={onFetchRejectedProduct}
