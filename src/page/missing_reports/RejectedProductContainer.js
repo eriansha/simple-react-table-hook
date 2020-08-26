@@ -22,9 +22,8 @@ function RejectedProductContainer(props) {
 
   return(
     <>
-      {/* <RejectedProductSimpleTable columns={columns} data={rejectedProducts} />
-      <div style={{ marginBottom: '100px' }}></div> */}
-      {console.log(rejectedProducts)}
+      <RejectedProductSimpleTable columns={columns} data={rejectedProducts} />
+      <div style={{ marginBottom: '100px' }}></div>
       <RejectedProductTable
         data={rejectedProducts} 
         pagination={pagination}

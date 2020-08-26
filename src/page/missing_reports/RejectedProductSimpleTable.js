@@ -1,18 +1,77 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useAsyncDebounce } from 'react-table'
 import { useTable } from 'react-table'
 import { Table } from 'reactstrap';
 
-function RejectedProductSimpleTable({ columns, data}) {
+function RejectedProductSimpleTable({ data, onFetchData, pagination}) {
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     rows,
     prepareRow,
+    state
   } = useTable({
     columns,
     data,
   })
+
+   // It's important that we're using React.useMemo 
+  // here to ensure that our data isn't recreated on every render
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'Seller',
+        columns: [
+          {
+            Header: 'ID',
+            accessor: 'id',
+          },
+          {
+            Header: 'Inbound ID',
+            accessor: 'inbound_id',
+          },
+          {
+            Header: 'Seller Return ID',
+            accessor: 'seller_return_id',
+          },
+          {
+            Header: 'Product Info',
+            accessor: 'product_info',
+          },
+          {
+            Header: 'Reason',
+            id: 'reason',
+            accessor: 'reject_reason',
+          },
+        ]
+      },
+      {
+        Header: 'Quantity',
+        columns: [
+          {
+            Header: 'Rejected',
+            accessor: 'quantity',
+          },
+          {
+            Header: 'Rejected Missing',
+            accessor: 'quantity_rejected_missing'
+          }
+        ]
+      }
+    ], []
+  )
+
+  // set delay every time call onFetchData
+  const onDebounceFetch = useAsyncDebounce(() => {
+    onFetchData(state)
+  }, 500)
+
+
+  // Server-side fetch data if the state changed
+  useEffect(() => {
+    onDebounceFetch()
+  }, [state])
 
   return(
     <>

@@ -10,7 +10,7 @@ export function formatGetParams(state) {
 export function paginationParams(pageSize, pageIndex) {
   const per_page_param = "per_page=" + pageSize.toString();
   const page_param = "page=" + (pageIndex + 1).toString();
-  return page_param + "&" + per_page_param;
+  return `&${page_param}&${per_page_param}`;
 }
 
 /** filtered: type array */

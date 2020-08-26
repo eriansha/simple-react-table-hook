@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { useTable, usePagination, useFilters, useAsyncDebounce } from 'react-table'
+import { useTable, usePagination, useFilters, useSortBy, useAsyncDebounce } from 'react-table'
 import { Table, Input, Pagination, PaginationLink, PaginationItem } from 'reactstrap';
 
 import { REJECTED_REASON } from '../../data'
@@ -99,26 +99,9 @@ function RejectedProductTable({ data, pagination, onFetchData}) {
       }
     ], []
   )
- 
-  const {
-    /* required instance */
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    /* final state object of the table  */
-    state,
-    /* pagination */
-    canPreviousPage,
-    canNextPage,
-    pageOptions,
-    pageCount,
-    gotoPage,
-    nextPage,
-    previousPage,
-    setPageSize,
-  } = useTable({
+
+  /* table instance */
+  const tableInstance = useTable({
     columns,
     data,
     defaultColumn,
@@ -133,6 +116,36 @@ function RejectedProductTable({ data, pagination, onFetchData}) {
     useFilters,
     usePagination
   )
+ 
+  const {
+    /* required instance */
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    /* final state object of the table  
+    {
+      filters: [{…}]
+      hiddenColumns: []
+      ...
+      initialState: {
+        pageIndex: 1
+        pageSize: 10
+      }
+    }
+    */
+    state,
+    /* pagination */
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+  } = tableInstance
 
   // set delay every time call onFetchData
   const onDebounceFetch = useAsyncDebounce(() => {
@@ -142,6 +155,7 @@ function RejectedProductTable({ data, pagination, onFetchData}) {
 
   // Server-side fetch data if the state changed
   useEffect(() => {
+    console.log(state)
     onDebounceFetch()
   }, [state])
 
@@ -162,8 +176,7 @@ function RejectedProductTable({ data, pagination, onFetchData}) {
               headerGroup.headers.map(column => (
                 // Apply the header cell props
                 <th {...column.getHeaderProps()}>
-                  {// Render the header
-                  column.render('Header')}
+                  {column.render('Header')}
                   <div>{column.canFilter ? column.render('Filter') : null}</div>
                 </th>
               ))}
@@ -196,36 +209,42 @@ function RejectedProductTable({ data, pagination, onFetchData}) {
           }
         </tbody>
       </Table>
-      <Pagination size="lg" aria-label="Page navigation example">
+      <>
+        <Pagination  
+          size="lg" 
+          aria-label="Page navigation example"
+        >
 
-        <PaginationItem>
-          <PaginationLink 
-            previous 
-            onClick={() => previousPage()} 
-            disabled={!canPreviousPage} 
-          />
-        </PaginationItem>
-       
-        <PaginationItem>
-          <Input 
-            type='number' 
-            onChange={e => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0
-              gotoPage(page)
-            }}
-          />
-          of Pages {pageCount}
-        </PaginationItem>
+          <PaginationItem>
+            <PaginationLink 
+              previous 
+              onClick={() => previousPage()} 
+              disabled={!canPreviousPage} 
+            />
+          </PaginationItem>
+        
+          <PaginationItem>
+            <Input
+              type='number'
+              value={state.pageIndex}
+              onChange={e => {
+                const page = e.target.value ? Number(e.target.value) : 1
+                gotoPage(page)
+              }}
+            />
+            of Pages {pageCount}
+          </PaginationItem>
 
-        <PaginationItem>
-          <PaginationLink 
-            next 
-            onClick={() => nextPage()}
-            disabled={!canNextPage}
-          />
-        </PaginationItem>
+          <PaginationItem>
+            <PaginationLink 
+              next 
+              onClick={() => nextPage()}
+              disabled={!canNextPage}
+            />
+          </PaginationItem>
 
-      </Pagination>
+        </Pagination>
+      </>
     </>
   )
 }
