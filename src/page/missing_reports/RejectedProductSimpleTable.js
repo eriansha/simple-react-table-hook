@@ -1,23 +1,11 @@
-import React, { useEffect } from 'react'
-import { useAsyncDebounce } from 'react-table'
+import React, { useMemo } from 'react'
 import { useTable } from 'react-table'
 import { Table } from 'reactstrap';
 
-function RejectedProductSimpleTable({ data, onFetchData, pagination}) {
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    state
-  } = useTable({
-    columns,
-    data,
-  })
-
-   // It's important that we're using React.useMemo 
-  // here to ensure that our data isn't recreated on every render
+function RejectedProductSimpleTable(props) {
+  // It's important that we're using React.useMemo 
+  // here to ensure that our data isn't recreated on every render.
+  // see https://react-table.tanstack.com/docs/quick-start
   const columns = React.useMemo(
     () => [
       {
@@ -62,16 +50,76 @@ function RejectedProductSimpleTable({ data, onFetchData, pagination}) {
     ], []
   )
 
-  // set delay every time call onFetchData
-  const onDebounceFetch = useAsyncDebounce(() => {
-    onFetchData(state)
-  }, 500)
+  // Use static data
+  // It's important that we're using React.useMemo 
+  // here to ensure that our data isn't recreated on every render
+  // see https://react-table.tanstack.com/docs/quick-start
+  const data = useMemo(
+    () => [
+      {
+        id: 71747,
+        inbound_id: 4168,
+        is_quantity_valid: true,
+        product_info: "& Other Stories Silver Backpack",
+        quantity: 1,
+        quantity_rejected_missing: 0,
+        reject_reason: "cannot_verify_authenticity",
+        seller_name: "Hani Kenisha",
+        seller_product_id: 200450,
+        seller_return_id: 5488,
+      },
+      {
+        id: 71747,
+        inbound_id: 4168,
+        is_quantity_valid: true,
+        product_info: "& Other Stories Silver Backpack",
+        quantity: 1,
+        quantity_rejected_missing: 0,
+        reject_reason: "cannot_verify_authenticity",
+        seller_name: "Hani Kenisha",
+        seller_product_id: 200450,
+        seller_return_id: 5488,
+      },
+      {
+        id: 71747,
+        inbound_id: 4168,
+        is_quantity_valid: true,
+        product_info: "& Other Stories Silver Backpack",
+        quantity: 1,
+        quantity_rejected_missing: 0,
+        reject_reason: "cannot_verify_authenticity",
+        seller_name: "Hani Kenisha",
+        seller_product_id: 200450,
+        seller_return_id: 5488,
+      },
+      {
+        id: 717,
+        inbound_id: 4168,
+        is_quantity_valid: true,
+        product_info: "& Other Stories Silver Backpack",
+        quantity: 1,
+        quantity_rejected_missing: 0,
+        reject_reason: "cannot_verify_authenticity",
+        seller_name: "Hani Kenisha",
+        seller_product_id: 200450,
+        seller_return_id: 5488,
+      }
+    ]
+  )
+
+  /* Initialize table instance */
+  // useTable at the very least needs to be provided with an object containing the memoized
+  const tableInstance = useTable({ columns, data })
 
 
-  // Server-side fetch data if the state changed
-  useEffect(() => {
-    onDebounceFetch()
-  }, [state])
+  /* Minimum configuration of react table */
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow
+  } = tableInstance
 
   return(
     <>
