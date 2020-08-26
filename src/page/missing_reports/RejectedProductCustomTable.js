@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { useTable, usePagination, useFilters, useSortBy, useAsyncDebounce } from 'react-table'
+import { useTable, usePagination, useFilters, useAsyncDebounce } from 'react-table'
 import { Table, Input, Pagination, PaginationLink, PaginationItem } from 'reactstrap';
 
 import { REJECTED_REASON } from '../../data'
@@ -8,7 +8,7 @@ import DefaultColummnFilter from '../../components/tables/DefaultColumnFilter';
 
 // Formating reject reason
 const formatReason = ({ value }) => {
-  const reason = REJECTED_REASON.find((reason) => reason.value == value ) 
+  const reason = REJECTED_REASON.find((reason) => reason.value === value ) 
   return reason.label
 }
 
@@ -36,9 +36,9 @@ const formatReason = ({ value }) => {
     )
   }
 
-function RejectedProductTable({ data, pagination, onFetchData}) {
+function RejectedProductCustomTable({ data, pagination, onFetchData}) {
 
-  // default filter for any filterable columns
+  // default filter for all filterable columns
   const defaultColumn = React.useMemo(
     () => ({
       Filter: DefaultColummnFilter
@@ -46,9 +46,9 @@ function RejectedProductTable({ data, pagination, onFetchData}) {
     []
   )
 
-
   // It's important that we're using React.useMemo 
-  // here to ensure that our data isn't recreated on every render
+  // here to ensure that our data isn't recreated on every render.
+  // see https://react-table.tanstack.com/docs/quick-start
   const columns = React.useMemo(
     () => [
       {
@@ -75,6 +75,7 @@ function RejectedProductTable({ data, pagination, onFetchData}) {
             Header: 'Reason',
             id: 'reason',
             accessor: 'reject_reason',
+            // Expected JSX / Function for customizing
             Filter: SelectColumnFilter,
             Cell: (row) => (
               <div>{formatReason(row)}</div>
@@ -110,6 +111,7 @@ function RejectedProductTable({ data, pagination, onFetchData}) {
       pageIndex: 1,
     },
     pageCount: pagination.total_count,
+    // it must be true if we implement filtering/pagination outside the table (e.i server-side)
     manualPagination: true,
     manualFilters: true
   },
@@ -125,13 +127,13 @@ function RejectedProductTable({ data, pagination, onFetchData}) {
     rows,
     prepareRow,
     /* final state object of the table  
+    since we add `initialState`, it should included in the `state`
     {
       filters: [{…}]
       hiddenColumns: []
       ...
-      initialState: {
-        pageIndex: 1
-        pageSize: 10
+      pageIndex: 1
+      pageSize: 10
       }
     }
     */
@@ -139,12 +141,10 @@ function RejectedProductTable({ data, pagination, onFetchData}) {
     /* pagination */
     canPreviousPage,
     canNextPage,
-    pageOptions,
     pageCount,
     gotoPage,
     nextPage,
     previousPage,
-    setPageSize,
   } = tableInstance
 
   // set delay every time call onFetchData
@@ -249,4 +249,4 @@ function RejectedProductTable({ data, pagination, onFetchData}) {
   )
 }
 
-export default RejectedProductTable
+export default RejectedProductCustomTable
